@@ -1,7 +1,13 @@
+import { Nav } from "@/components/nav";
+import { Hero } from "@/components/hero";
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-muted-foreground text-sm">Synapse</p>
-    </main>
+    <>
+      <Nav />
+      <main>
+        <Hero />
+      </main>
+    </>
   );
 }
