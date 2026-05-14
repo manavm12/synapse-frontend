@@ -44,16 +44,12 @@ export function FAQ() {
 
         {/* Headline */}
         <h2
-          className="mb-16 max-w-xl leading-tight"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(2rem, 4vw, 3rem)",
-            fontWeight: 400,
-          }}
+          className="mb-16 max-w-xl leading-tight tracking-tight"
+          style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
         >
-          <span className="text-white/90">Questions agents</span>
+          <span className="font-bold text-white">Questions agents</span>
           <br />
-          <span className="text-white/35">would ask too.</span>
+          <span className="font-light text-white/35">would ask too.</span>
         </h2>
 
         {/* Accordion */}

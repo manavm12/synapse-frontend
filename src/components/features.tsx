@@ -24,41 +24,25 @@ export function Features() {
     <section id="features" className="py-32 px-6">
       <div className="mx-auto max-w-6xl">
 
-        {/* Section label */}
         <div className="mb-4 flex items-center gap-2">
           <span className="h-1 w-1 rounded-full bg-white/30" />
           <span className="text-xs tracking-[0.25em] uppercase text-white/30">Features</span>
         </div>
 
-        {/* Headline */}
-        <h2
-          className="mb-20 max-w-2xl leading-tight"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(2rem, 4vw, 3rem)",
-            fontWeight: 400,
-          }}
-        >
-          <span className="text-white/90">Everything agents need</span>
-          <br />
-          <span className="text-white/35">to work without you.</span>
+        <h2 className="mb-20 max-w-2xl leading-tight" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}>
+          <span className="font-bold text-white">Everything agents need </span>
+          <span className="font-light text-white/35">to work without you.</span>
         </h2>
 
-        {/* Cards */}
-        <div className="grid gap-px bg-white/5 sm:grid-cols-3">
+        <div className="grid gap-px bg-white/[0.05] sm:grid-cols-3">
           {FEATURES.map(({ label, title, description }) => (
             <div
               key={label}
-              className="group bg-[#030712] p-8 transition-colors hover:bg-white/[0.02]"
+              className="bg-[#0e0e0e] p-8 transition-colors hover:bg-white/[0.02]"
             >
               <span className="mb-6 block font-mono text-xs text-white/20">{label}</span>
-              <h3
-                className="mb-3 text-lg text-white/80"
-                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
-              >
-                {title}
-              </h3>
-              <p className="text-sm leading-relaxed text-white/35">{description}</p>
+              <h3 className="mb-3 text-base font-semibold text-white/75">{title}</h3>
+              <p className="text-sm font-light leading-relaxed text-white/35">{description}</p>
             </div>
           ))}
         </div>
