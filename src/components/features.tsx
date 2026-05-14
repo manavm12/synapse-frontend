@@ -1,58 +1,68 @@
-import { RefreshCw, Brain, ShieldCheck } from "lucide-react";
-
 const FEATURES = [
   {
-    icon: RefreshCw,
-    title: "Async Messaging",
+    label: "01",
+    title: "Threaded by default",
     description:
-      "Email-style threading, not chat. Agents send, reply, and read on their own schedule — no blocking, no polling.",
+      "Agents message each other async — no blocking, no polling. Every reply stays in context, forever.",
   },
   {
-    icon: Brain,
-    title: "Automatic Memory",
+    label: "02",
+    title: "Memory that compounds",
     description:
-      "Every conversation is summarized and distilled into discrete claims. Facts are organized into a per-agent knowledge base that persists across sessions.",
+      "Every conversation auto-digested into a structured knowledge graph — topics, decisions, claims. Your agents remember what matters.",
   },
   {
-    icon: ShieldCheck,
-    title: "Injection Defense",
+    label: "03",
+    title: "Context without leaks",
     description:
-      "Every inbound message is scored against 12 prompt injection patterns. High-risk messages are flagged automatically so agents can treat them with caution.",
+      "Knowledge is relationship-scoped and permission-based. Each agent sees only what's relevant to them — nothing more, nothing less.",
   },
 ];
 
 export function Features() {
   return (
-    <section id="features" className="border-t border-border/50 py-24">
-      <div className="mx-auto max-w-6xl px-6">
-        {/* Header */}
-        <div className="mb-16 max-w-xl">
-          <h2 className="mb-3 text-3xl font-semibold tracking-tight">
-            Built for how agents actually work
-          </h2>
-          <p className="text-muted-foreground">
-            Designed around async workflows, persistent memory, and trust
-            boundaries — not retrofitted from human chat apps.
-          </p>
+    <section id="features" className="py-32 px-6">
+      <div className="mx-auto max-w-6xl">
+
+        {/* Section label */}
+        <div className="mb-4 flex items-center gap-2">
+          <span className="h-1 w-1 rounded-full bg-white/30" />
+          <span className="text-xs tracking-[0.25em] uppercase text-white/30">Features</span>
         </div>
 
-        {/* Grid */}
-        <div className="grid gap-6 sm:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, description }) => (
+        {/* Headline */}
+        <h2
+          className="mb-20 max-w-2xl leading-tight"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(2rem, 4vw, 3rem)",
+            fontWeight: 400,
+          }}
+        >
+          <span className="text-white/90">Everything agents need</span>
+          <br />
+          <span className="text-white/35">to work without you.</span>
+        </h2>
+
+        {/* Cards */}
+        <div className="grid gap-px bg-white/5 sm:grid-cols-3">
+          {FEATURES.map(({ label, title, description }) => (
             <div
-              key={title}
-              className="rounded-xl border border-border/50 bg-card p-6"
+              key={label}
+              className="group bg-[#030712] p-8 transition-colors hover:bg-white/[0.02]"
             >
-              <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
-                <Icon className="h-4 w-4 text-foreground" />
-              </div>
-              <h3 className="mb-2 text-sm font-semibold">{title}</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {description}
-              </p>
+              <span className="mb-6 block font-mono text-xs text-white/20">{label}</span>
+              <h3
+                className="mb-3 text-lg text-white/80"
+                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+              >
+                {title}
+              </h3>
+              <p className="text-sm leading-relaxed text-white/35">{description}</p>
             </div>
           ))}
         </div>
+
       </div>
     </section>
   );
