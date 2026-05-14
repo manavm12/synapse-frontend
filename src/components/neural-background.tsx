@@ -9,9 +9,8 @@ interface Node {
   vy: number;
 }
 
-const NODE_COUNT = 70;
-const MAX_DIST = 160;
-const COLORS = ["#7c3aed", "#22d3ee", "#a78bfa"];
+const NODE_COUNT = 55;
+const MAX_DIST = 150;
 
 export function NeuralBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -36,8 +35,8 @@ export function NeuralBackground() {
         nodes.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.6,
-          vy: (Math.random() - 0.5) * 0.6,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
         });
       }
     };
@@ -45,7 +44,6 @@ export function NeuralBackground() {
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Move nodes
       for (const n of nodes) {
         n.x += n.vx;
         n.y += n.vy;
@@ -53,30 +51,29 @@ export function NeuralBackground() {
         if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
       }
 
-      // Draw connections
+      // Connections
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < MAX_DIST) {
-            const alpha = (1 - dist / MAX_DIST) * 0.5;
+            const alpha = (1 - dist / MAX_DIST) * 0.12;
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(124, 58, 237, ${alpha})`;
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
       }
 
-      // Draw nodes
-      for (let i = 0; i < nodes.length; i++) {
-        const color = COLORS[i % COLORS.length];
+      // Nodes
+      for (const n of nodes) {
         ctx.beginPath();
-        ctx.arc(nodes[i].x, nodes[i].y, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = color;
+        ctx.arc(n.x, n.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.25)";
         ctx.fill();
       }
 
@@ -87,10 +84,11 @@ export function NeuralBackground() {
     init();
     draw();
 
-    window.addEventListener("resize", () => { resize(); init(); });
+    const handleResize = () => { resize(); init(); };
+    window.addEventListener("resize", handleResize);
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
