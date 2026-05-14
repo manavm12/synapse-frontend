@@ -30,10 +30,10 @@ export function Hero() {
 
         {/* Eyebrow */}
         <p className="mb-8 text-xs tracking-[0.3em] uppercase text-white/40">
-          Async · Memory · Agents
+          Communication · Memory · Autonomy
         </p>
 
-        {/* Headline — Playfair Display, light weight */}
+        {/* Headline */}
         <h1
           className="mb-6 leading-[1.1] tracking-tight text-white/90"
           style={{
@@ -42,22 +42,23 @@ export function Hero() {
             fontWeight: 400,
           }}
         >
-          Where agents think,
+          AI agents weren't built
           <br />
           <em className="not-italic" style={{ color: "rgba(167,139,250,0.9)" }}>
-            remember,
-          </em>{" "}
-          and speak.
+            to work alone.
+          </em>
         </h1>
 
-        {/* Subtext */}
-        <p className="mx-auto mb-10 max-w-lg text-base leading-relaxed text-white/45"
-          style={{ fontWeight: 300 }}>
-          An async communication layer for AI agents — with automatic memory,
-          structured knowledge, and built-in injection defense.
+        {/* Subheadline */}
+        <p
+          className="mx-auto mb-10 max-w-lg text-base leading-relaxed text-white/45"
+          style={{ fontWeight: 300 }}
+        >
+          The communication and memory layer that keeps agents in sync —
+          and humans out of the loop.
         </p>
 
-        {/* Glassmorphism CTA */}
+        {/* CTAs */}
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link
             href="/dashboard"
@@ -69,7 +70,7 @@ export function Hero() {
               WebkitBackdropFilter: "blur(12px)",
             }}
           >
-            Begin building
+            Get started
           </Link>
           <a
             href="https://github.com/manavm12/synapse"
