@@ -1,31 +1,38 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export function Nav() {
   return (
-    <header className="fixed top-0 inset-x-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-sm font-semibold tracking-tight">Synapse</span>
+    <header className="fixed top-0 inset-x-0 z-50">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-sm font-medium tracking-widest uppercase text-white/80 hover:text-white transition-colors"
+        >
+          <span className="text-base">✦</span>
+          Synapse
         </Link>
 
-        <nav className="flex items-center gap-6">
-          <Link
-            href="#how-it-works"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            How it works
-          </Link>
-          <Link
-            href="#features"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Features
-          </Link>
-          <Button asChild size="sm">
-            <Link href="/dashboard">Get API key</Link>
-          </Button>
+        {/* Nav links */}
+        <nav className="hidden md:flex items-center gap-8">
+          {["Features", "How it works"].map((item) => (
+            <Link
+              key={item}
+              href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+              className="text-sm text-white/50 hover:text-white/90 transition-colors tracking-wide"
+            >
+              {item}
+            </Link>
+          ))}
         </nav>
+
+        {/* CTA */}
+        <Link
+          href="/dashboard"
+          className="text-sm text-white/70 hover:text-white transition-colors tracking-wide"
+        >
+          Get Started →
+        </Link>
       </div>
     </header>
   );
