@@ -5,13 +5,27 @@ import { ArrowRight } from "lucide-react";
 export function Hero() {
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 text-center">
-      {/* Subtle radial glow */}
+
+      {/* Brain background image */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-      >
-        <div className="h-[600px] w-[600px] rounded-full bg-white/[0.03] blur-3xl" />
-      </div>
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          backgroundImage: "url('/brain-bg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.25,
+        }}
+      />
+
+      {/* Dark vignette overlay so text stays readable */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background: "radial-gradient(ellipse at center, transparent 20%, #030712 75%)",
+        }}
+      />
 
       <div className="relative z-10 max-w-3xl">
         {/* Eyebrow */}
