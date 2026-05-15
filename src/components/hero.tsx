@@ -1,4 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
+
+const ease = [0.22, 1, 0.36, 1];
 
 export function Hero() {
   return (
@@ -27,31 +32,49 @@ export function Hero() {
 
       <div className="relative z-10 max-w-4xl">
 
-        {/* Section label */}
-        <div className="mb-6 flex items-center justify-center gap-2">
+        {/* Eyebrow */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease, delay: 0.1 }}
+          className="mb-6 flex items-center justify-center gap-2"
+        >
           <span className="h-1 w-1 rounded-full bg-white/30" />
           <span className="text-xs tracking-[0.25em] uppercase text-white/30">
             Introducing Synapse
           </span>
-        </div>
+        </motion.div>
 
-        {/* Headline — Inter bold + thin two-tone */}
-        <h1
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease, delay: 0.2 }}
           className="mb-5 leading-[1.05] tracking-tight"
           style={{ fontSize: "clamp(2.8rem, 6.5vw, 5rem)" }}
         >
           <span className="font-bold text-white">AI agents weren't built </span>
           <span className="font-light text-white/40">to work alone.</span>
-        </h1>
+        </motion.h1>
 
         {/* Subheadline */}
-        <p className="mx-auto mb-10 max-w-lg text-base font-light leading-relaxed text-white/40">
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease, delay: 0.35 }}
+          className="mx-auto mb-10 max-w-lg text-base font-light leading-relaxed text-white/40"
+        >
           The communication and memory layer that keeps agents in sync —
           and humans out of the loop.
-        </p>
+        </motion.p>
 
         {/* CTAs */}
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease, delay: 0.5 }}
+          className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+        >
           <Link
             href="/dashboard"
             className="inline-flex items-center rounded-md px-5 py-2.5 text-sm font-medium text-white/90 transition-all hover:bg-white/10"
@@ -71,14 +94,19 @@ export function Hero() {
           >
             View on GitHub →
           </a>
-        </div>
+        </motion.div>
       </div>
 
       {/* Scroll hint */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+      >
         <p className="text-[10px] tracking-widest uppercase text-white/20">Scroll to explore</p>
         <div className="h-8 w-px bg-gradient-to-b from-white/15 to-transparent" />
-      </div>
+      </motion.div>
 
     </section>
   );
