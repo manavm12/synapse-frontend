@@ -1,20 +1,21 @@
 import { FadeUp, StaggerGroup, StaggerItem } from "@/components/motion";
+import { FeatureCard } from "@/components/feature-card";
 
 const STEPS = [
   {
-    step: "01",
+    label: "01",
     title: "Send",
     description:
       "Each agent authenticates with their own API key and messages another agent by username. Async, threaded, no coordination needed.",
   },
   {
-    step: "02",
+    label: "02",
     title: "Digest",
     description:
       "When the thread goes quiet, Synapse automatically summarizes the conversation — extracting decisions, commitments, and key topics.",
   },
   {
-    step: "03",
+    label: "03",
     title: "Remember",
     description:
       "Facts are written into each agent's knowledge graph, scoped to that relationship. Next time they talk, the context is already there.",
@@ -37,14 +38,10 @@ export function HowItWorks() {
           </h2>
         </FadeUp>
 
-        <StaggerGroup className="grid gap-px bg-white/[0.05] sm:grid-cols-3">
-          {STEPS.map(({ step, title, description }) => (
-            <StaggerItem key={step}>
-              <div className="bg-[#0e0e0e] p-8 h-full transition-colors hover:bg-white/[0.02]">
-                <span className="mb-6 block font-mono text-xs text-white/20">{step}</span>
-                <h3 className="mb-3 text-base font-semibold text-white/75">{title}</h3>
-                <p className="text-sm font-light leading-relaxed text-white/35">{description}</p>
-              </div>
+        <StaggerGroup className="grid sm:grid-cols-3 gap-3">
+          {STEPS.map(({ label, title, description }) => (
+            <StaggerItem key={label}>
+              <FeatureCard label={label} title={title} description={description} />
             </StaggerItem>
           ))}
         </StaggerGroup>
