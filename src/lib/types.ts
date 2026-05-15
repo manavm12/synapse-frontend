@@ -22,3 +22,10 @@ export interface Thread {
     created_at: string;
   } | null;
 }
+
+// A "DM conversation" — all threads grouped by the other participant
+export interface DMConversation {
+  partner: string;
+  threads: Thread[];
+  lastActivity: string;
+}

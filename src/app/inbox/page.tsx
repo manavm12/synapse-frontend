@@ -2,22 +2,41 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { AgentSidebar } from "@/components/inbox/agent-sidebar";
-import { MessageList } from "@/components/inbox/message-list";
-import { MessageDetail } from "@/components/inbox/message-detail";
+import { DmList } from "@/components/inbox/dm-list";
+import { ChatView } from "@/components/inbox/chat-view";
 import { AddAgentModal } from "@/components/inbox/add-agent-modal";
-import type { Agent, Message } from "@/lib/types";
+import type { Agent, Thread, Message, DMConversation } from "@/lib/types";
 
 const STORAGE_KEY = "synapse-agents";
+
+function groupThreadsByPartner(threads: Thread[], currentAgent: string): DMConversation[] {
+  const map = new Map<string, Thread[]>();
+
+  for (const thread of threads) {
+    const partner = thread.participants.find((p) => p !== currentAgent) ?? "unknown";
+    if (!map.has(partner)) map.set(partner, []);
+    map.get(partner)!.push(thread);
+  }
+
+  return Array.from(map.entries())
+    .map(([partner, threadList]) => ({
+      partner,
+      threads: threadList,
+      lastActivity: threadList[0]?.last_message?.created_at ?? "",
+    }))
+    .sort((a, b) => new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime());
+}
 
 export default function InboxPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<DMConversation[]>([]);
+  const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingThreads, setLoadingThreads] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Load agents from localStorage
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) setAgents(JSON.parse(stored));
@@ -35,28 +54,63 @@ export default function InboxPage() {
     setShowAddModal(false);
   };
 
-  const fetchInbox = useCallback(async (username: string) => {
-    const agent = agents.find((a) => a.username === username);
-    if (!agent) return;
-    setLoading(true);
+  const getKey = useCallback((username: string) =>
+    agents.find((a) => a.username === username)?.apiKey ?? "", [agents]);
+
+  // Fetch threads and group into DM conversations
+  const fetchThreads = useCallback(async (username: string) => {
+    const key = getKey(username);
+    if (!key) return;
+    setLoadingThreads(true);
+    setConversations([]);
+    setSelectedPartner(null);
     setMessages([]);
-    setSelectedMessage(null);
     try {
-      const res = await fetch(`/api/synapse/v1/messages/inbox`, {
-        headers: { Authorization: `Bearer ${agent.apiKey}` },
+      const res = await fetch("/api/synapse/v1/threads", {
+        headers: { Authorization: `Bearer ${key}` },
       });
       if (res.ok) {
-        const data = await res.json();
-        setMessages(data);
+        const data: Thread[] = await res.json();
+        setConversations(groupThreadsByPartner(data, username));
       }
     } finally {
-      setLoading(false);
+      setLoadingThreads(false);
     }
-  }, [agents]);
+  }, [getKey]);
+
+  // Fetch all messages for threads with a partner
+  const fetchMessages = useCallback(async (partner: string) => {
+    const key = getKey(selectedAgent!);
+    if (!key) return;
+    const conv = conversations.find((c) => c.partner === partner);
+    if (!conv) return;
+    setLoadingMessages(true);
+    setMessages([]);
+    try {
+      const allMessages: Message[] = [];
+      for (const thread of conv.threads) {
+        const res = await fetch(`/api/synapse/v1/threads/${thread.thread_id}`, {
+          headers: { Authorization: `Bearer ${key}` },
+        });
+        if (res.ok) {
+          const data: Message[] = await res.json();
+          allMessages.push(...data);
+        }
+      }
+      allMessages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      setMessages(allMessages);
+    } finally {
+      setLoadingMessages(false);
+    }
+  }, [getKey, selectedAgent, conversations]);
 
   useEffect(() => {
-    if (selectedAgent) fetchInbox(selectedAgent);
-  }, [selectedAgent, fetchInbox]);
+    if (selectedAgent) fetchThreads(selectedAgent);
+  }, [selectedAgent, fetchThreads]);
+
+  useEffect(() => {
+    if (selectedPartner) fetchMessages(selectedPartner);
+  }, [selectedPartner, fetchMessages]);
 
   return (
     <div className="flex h-full">
@@ -66,14 +120,19 @@ export default function InboxPage() {
         onSelect={setSelectedAgent}
         onAdd={() => setShowAddModal(true)}
       />
-      <MessageList
-        messages={messages}
-        selectedId={selectedMessage?.message_id ?? null}
-        onSelect={(id) => setSelectedMessage(messages.find((m) => m.message_id === id) ?? null)}
-        loading={loading}
+      <DmList
+        conversations={conversations}
+        selectedPartner={selectedPartner}
+        onSelect={setSelectedPartner}
+        loading={loadingThreads}
         agentUsername={selectedAgent}
       />
-      <MessageDetail message={selectedMessage} />
+      <ChatView
+        partner={selectedPartner}
+        messages={messages}
+        currentAgent={selectedAgent}
+        loading={loadingMessages}
+      />
       {showAddModal && (
         <AddAgentModal onAdd={addAgent} onClose={() => setShowAddModal(false)} />
       )}
