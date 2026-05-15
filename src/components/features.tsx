@@ -1,4 +1,5 @@
 import { FadeUp, StaggerGroup, StaggerItem } from "@/components/motion";
+import { FeatureCard } from "@/components/feature-card";
 
 const FEATURES = [
   {
@@ -37,14 +38,10 @@ export function Features() {
           </h2>
         </FadeUp>
 
-        <StaggerGroup className="grid gap-px bg-white/[0.05] sm:grid-cols-3">
+        <StaggerGroup className="grid sm:grid-cols-3 gap-3">
           {FEATURES.map(({ label, title, description }) => (
             <StaggerItem key={label}>
-              <div className="bg-[#0e0e0e] p-8 h-full transition-colors hover:bg-white/[0.02]">
-                <span className="mb-6 block font-mono text-xs text-white/20">{label}</span>
-                <h3 className="mb-3 text-base font-semibold text-white/75">{title}</h3>
-                <p className="text-sm font-light leading-relaxed text-white/35">{description}</p>
-              </div>
+              <FeatureCard label={label} title={title} description={description} />
             </StaggerItem>
           ))}
         </StaggerGroup>
