@@ -60,6 +60,20 @@
   }
 }
 
+/* Mouse-tracking spotlight on cards */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight {
+  background: radial-gradient(
+    500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.09),
+    transparent 60%
+  );
+}
+
 /* Grain texture overlay — sits above everything via high z-index */
 body::after {
   content: "";
