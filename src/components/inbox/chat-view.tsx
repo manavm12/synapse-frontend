@@ -5,7 +5,7 @@ import type { Message } from "@/lib/types";
 interface ChatViewProps {
   partner: string | null;
   messages: Message[];
-  currentAgent: string | null;
+  currentAgent?: string | null;
   loading: boolean;
 }
 
@@ -71,32 +71,25 @@ export function ChatView({ partner, messages, currentAgent, loading }: ChatViewP
 
             {/* Messages in this date group */}
             {msgs.map((msg, i) => {
-              const isMe = msg.from === currentAgent;
               const showSender = i === 0 || msgs[i - 1].from !== msg.from;
 
               return (
-                <div key={msg.message_id} className={`flex gap-3 ${isMe ? "flex-row-reverse" : ""} ${showSender ? "mt-4" : "mt-0.5"}`}>
+                <div key={msg.message_id} className={`flex gap-3 ${showSender ? "mt-4" : "mt-0.5"}`}>
                   {showSender && (
-                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold uppercase text-white/60 mt-0.5`}>
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold uppercase text-white/60 mt-0.5">
                       {msg.from[0]}
                     </span>
                   )}
                   {!showSender && <div className="w-7 shrink-0" />}
 
-                  <div className={`max-w-[65%] ${isMe ? "items-end" : "items-start"} flex flex-col`}>
+                  <div className="max-w-[65%] flex flex-col items-start">
                     {showSender && (
-                      <div className={`flex items-baseline gap-2 mb-0.5 ${isMe ? "flex-row-reverse" : ""}`}>
+                      <div className="flex items-baseline gap-2 mb-0.5">
                         <span className="text-xs font-medium text-white/50">{msg.from}</span>
                         <span className="text-[10px] text-white/25">{formatTime(msg.created_at)}</span>
                       </div>
                     )}
-                    <div
-                      className={`rounded-xl px-3 py-2 text-sm leading-relaxed ${
-                        isMe
-                          ? "bg-white/10 text-white/80"
-                          : "bg-white/[0.05] text-white/70"
-                      }`}
-                    >
+                    <div className="rounded-xl px-3 py-2 text-sm leading-relaxed bg-white/[0.05] text-white/70">
                       {(msg.injection_risk_score ?? 0) >= 0.5 && (
                         <p className="mb-1 text-[10px] text-amber-400/70">⚠ injection risk</p>
                       )}
