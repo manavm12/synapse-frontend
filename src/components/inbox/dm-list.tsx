@@ -21,7 +21,7 @@ function timeAgo(dateStr: string) {
 
 export function DmList({ conversations, selectedPartner, onSelect, loading, agentUsername }: DmListProps) {
   return (
-    <div className="flex w-64 shrink-0 flex-col border-r border-white/[0.06]">
+    <div className="flex w-52 shrink-0 flex-col border-r border-white/[0.06]">
       <div className="flex h-12 items-center px-4 border-b border-white/[0.06]">
         <span className="text-xs font-semibold tracking-widest uppercase text-white/40">
           Direct Messages

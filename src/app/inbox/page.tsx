@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { AgentSidebar } from "@/components/inbox/agent-sidebar";
 import { DmList } from "@/components/inbox/dm-list";
 import { ChatView } from "@/components/inbox/chat-view";
+import { ThreadPane } from "@/components/inbox/thread-pane";
 import { AddAgentModal } from "@/components/inbox/add-agent-modal";
 import type { Agent, Thread, Message, DMConversation } from "@/lib/types";
 
@@ -11,13 +12,11 @@ const STORAGE_KEY = "synapse-agents";
 
 function groupThreadsByPartner(threads: Thread[], currentAgent: string): DMConversation[] {
   const map = new Map<string, Thread[]>();
-
   for (const thread of threads) {
     const partner = thread.participants.find((p) => p !== currentAgent) ?? "unknown";
     if (!map.has(partner)) map.set(partner, []);
     map.get(partner)!.push(thread);
   }
-
   return Array.from(map.entries())
     .map(([partner, threadList]) => ({
       partner,
@@ -32,9 +31,9 @@ export default function InboxPage() {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [conversations, setConversations] = useState<DMConversation[]>([]);
   const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [threadMessages, setThreadMessages] = useState<Record<string, Message[]>>({});
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const [loadingThreads, setLoadingThreads] = useState(false);
-  const [loadingMessages, setLoadingMessages] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
@@ -54,17 +53,19 @@ export default function InboxPage() {
     setShowAddModal(false);
   };
 
-  const getKey = useCallback((username: string) =>
-    agents.find((a) => a.username === username)?.apiKey ?? "", [agents]);
+  const getKey = useCallback(
+    (username: string) => agents.find((a) => a.username === username)?.apiKey ?? "",
+    [agents]
+  );
 
-  // Fetch threads and group into DM conversations
   const fetchThreads = useCallback(async (username: string) => {
     const key = getKey(username);
     if (!key) return;
     setLoadingThreads(true);
     setConversations([]);
     setSelectedPartner(null);
-    setMessages([]);
+    setThreadMessages({});
+    setSelectedThreadId(null);
     try {
       const res = await fetch("/api/synapse/v1/threads", {
         headers: { Authorization: `Bearer ${key}` },
@@ -78,39 +79,28 @@ export default function InboxPage() {
     }
   }, [getKey]);
 
-  // Fetch all messages for threads with a partner
-  const fetchMessages = useCallback(async (partner: string) => {
+  const fetchPartnerThreads = useCallback(async (partner: string) => {
     const key = getKey(selectedAgent!);
     if (!key) return;
     const conv = conversations.find((c) => c.partner === partner);
     if (!conv) return;
-    setLoadingMessages(true);
-    setMessages([]);
-    try {
-      const allMessages: Message[] = [];
-      for (const thread of conv.threads) {
-        const res = await fetch(`/api/synapse/v1/threads/${thread.thread_id}`, {
-          headers: { Authorization: `Bearer ${key}` },
-        });
-        if (res.ok) {
-          const data: Message[] = await res.json();
-          allMessages.push(...data);
-        }
-      }
-      allMessages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-      setMessages(allMessages);
-    } finally {
-      setLoadingMessages(false);
+    setThreadMessages({});
+    setSelectedThreadId(null);
+
+    const result: Record<string, Message[]> = {};
+    for (const thread of conv.threads) {
+      const res = await fetch(`/api/synapse/v1/threads/${thread.thread_id}`, {
+        headers: { Authorization: `Bearer ${key}` },
+      });
+      if (res.ok) result[thread.thread_id] = await res.json();
     }
+    setThreadMessages(result);
   }, [getKey, selectedAgent, conversations]);
 
-  useEffect(() => {
-    if (selectedAgent) fetchThreads(selectedAgent);
-  }, [selectedAgent, fetchThreads]);
+  useEffect(() => { if (selectedAgent) fetchThreads(selectedAgent); }, [selectedAgent, fetchThreads]);
+  useEffect(() => { if (selectedPartner) fetchPartnerThreads(selectedPartner); }, [selectedPartner, fetchPartnerThreads]);
 
-  useEffect(() => {
-    if (selectedPartner) fetchMessages(selectedPartner);
-  }, [selectedPartner, fetchMessages]);
+  const selectedConv = conversations.find((c) => c.partner === selectedPartner);
 
   return (
     <div className="flex h-full">
@@ -129,10 +119,20 @@ export default function InboxPage() {
       />
       <ChatView
         partner={selectedPartner}
-        messages={messages}
+        threads={selectedConv?.threads ?? []}
+        threadMessages={threadMessages}
         currentAgent={selectedAgent}
-        loading={loadingMessages}
+        selectedThreadId={selectedThreadId}
+        onSelectThread={setSelectedThreadId}
+        loading={loadingThreads}
       />
+      {selectedThreadId && threadMessages[selectedThreadId] && (
+        <ThreadPane
+          messages={threadMessages[selectedThreadId]}
+          currentAgent={selectedAgent}
+          onClose={() => setSelectedThreadId(null)}
+        />
+      )}
       {showAddModal && (
         <AddAgentModal onAdd={addAgent} onClose={() => setShowAddModal(false)} />
       )}

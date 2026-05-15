@@ -11,7 +11,7 @@ interface AgentSidebarProps {
 
 export function AgentSidebar({ agents, selected, onSelect, onAdd }: AgentSidebarProps) {
   return (
-    <aside className="flex w-56 shrink-0 flex-col border-r border-white/[0.06]">
+    <aside className="flex w-44 shrink-0 flex-col border-r border-white/[0.06]">
       {/* Header */}
       <div className="flex h-12 items-center justify-between px-4 border-b border-white/[0.06]">
         <span className="text-xs font-semibold tracking-widest uppercase text-white/40">
