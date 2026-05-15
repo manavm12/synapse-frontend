@@ -42,8 +42,7 @@ export default function InboxPage() {
     setMessages([]);
     setSelectedMessage(null);
     try {
-      const base = process.env.NEXT_PUBLIC_SYNAPSE_URL ?? "https://synapse-message.up.railway.app";
-      const res = await fetch(`${base}/v1/messages/inbox`, {
+      const res = await fetch(`/api/synapse/v1/messages/inbox`, {
         headers: { Authorization: `Bearer ${agent.apiKey}` },
       });
       if (res.ok) {
