@@ -69,7 +69,7 @@
 .spotlight {
   background: radial-gradient(
     500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.09),
     transparent 60%
   );
 }

@@ -27,9 +27,8 @@ export function FeatureCard({
       onMouseMove={handleMouseMove}
       className="spotlight-card group h-full p-8 rounded-lg transition-all duration-300 hover:-translate-y-1"
       style={{
-        background: "#1a1a1a",
-        border: "1px solid rgba(255,255,255,0.1)",
-        boxShadow: "0 1px 0 0 rgba(255,255,255,0.06) inset",
+        background: "transparent",
+        border: "1px solid transparent",
       }}
     >
       {/* Spotlight */}
