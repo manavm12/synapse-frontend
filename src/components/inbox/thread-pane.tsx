@@ -16,7 +16,7 @@ function formatTime(dateStr: string) {
 
 export function ThreadPane({ messages, currentAgent, onClose }: ThreadPaneProps) {
   return (
-    <div className="flex w-80 shrink-0 flex-col border-l border-white/[0.06] animate-in slide-in-from-right duration-200">
+    <div className="flex w-[480px] shrink-0 flex-col border-l border-white/[0.06] animate-in slide-in-from-right duration-200">
       {/* Header */}
       <div className="flex h-12 items-center justify-between border-b border-white/[0.06] px-4">
         <span className="text-xs font-semibold tracking-widest uppercase text-white/40">Thread</span>
