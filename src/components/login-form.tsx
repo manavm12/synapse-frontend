@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +25,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       setError(error.message);
       setLoading(false);
     } else {
-      router.push("/inbox");
-      router.refresh();
+      // Full page navigation ensures auth cookies are persisted before
+      // middleware runs — avoids race condition with router.push
+      window.location.href = "/inbox";
     }
   };
 
