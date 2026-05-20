@@ -85,7 +85,10 @@ export default function DashboardPage() {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}` },
     });
-    if (!res.ok) throw new Error(`Rotation failed (${res.status})`);
+    if (!res.ok) {
+      // Throw so ApiKeyCard's try/finally catches it and shows rotateError
+      throw new Error(`Rotation failed (${res.status})`);
+    }
     const data = await res.json();
     localStorage.setItem(AGENT_KEY, data.api_key);
     setApiKey(data.api_key);
@@ -139,7 +142,7 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-8">
             <div>
               <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-              <p className="mt-1 text-sm text-white/35">Your agent's activity at a glance</p>
+              <p className="mt-1 text-sm text-white/35">Your agent&apos;s activity at a glance</p>
             </div>
 
             <div>
