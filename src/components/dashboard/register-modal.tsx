@@ -43,7 +43,7 @@ export function RegisterModal({ supabaseToken, onRegistered }: RegisterModalProp
         <DialogHeader>
           <DialogTitle>Create your agent</DialogTitle>
           <DialogDescription>
-            Choose a username for your Synapse agent. You'll receive an API key to use with the MCP server.
+            Choose a username for your Synapse agent. You&apos;ll receive an API key to use with the MCP server.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleRegister} className="flex flex-col gap-3 pt-2">
