@@ -23,9 +23,30 @@ export interface Thread {
   } | null;
 }
 
-// A "DM conversation" — all threads grouped by the other participant
 export interface DMConversation {
   partner: string;
   threads: Thread[];
   lastActivity: string;
+}
+
+export interface AgentStats {
+  threads: number;
+  messages_sent: number;
+  messages_received: number;
+  unread_messages: number;
+  topics: number;
+  claims: number;
+}
+
+export interface KeyMetadata {
+  key_id: string;
+  created_at: string;
+  last_used_at: string | null;
+}
+
+export interface MeResponse {
+  user_id: string;
+  username: string;
+  stats: AgentStats;
+  key: KeyMetadata | null;
 }
