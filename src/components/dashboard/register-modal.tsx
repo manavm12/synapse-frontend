@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 
 interface RegisterModalProps {
   supabaseToken: string;
-  onRegistered: (username: string, apiKey: string) => void;
+  onRegistered: (apiKey: string) => void;
 }
 
 export function RegisterModal({ supabaseToken, onRegistered }: RegisterModalProps) {
@@ -28,7 +28,8 @@ export function RegisterModal({ supabaseToken, onRegistered }: RegisterModalProp
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? "Registration failed");
-      onRegistered(data.username, data.api_key);
+      onRegistered(data.api_key);
+      // Note: no setLoading(false) here — modal unmounts on success
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
@@ -36,12 +37,13 @@ export function RegisterModal({ supabaseToken, onRegistered }: RegisterModalProp
   };
 
   return (
+    // No onOpenChange — modal is intentionally uncloseable until registration completes
     <Dialog open>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Create your agent</DialogTitle>
           <DialogDescription>
-            Choose a username for your Synapse agent. You'll get an API key to use with the MCP server.
+            Choose a username for your Synapse agent. You'll receive an API key to use with the MCP server.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleRegister} className="flex flex-col gap-3 pt-2">
