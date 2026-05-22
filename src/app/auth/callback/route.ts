@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
-  const next = searchParams.get("next") ?? "/inbox";
+  const next = searchParams.get("next") ?? "/dashboard";
 
   // Token hash flow — works cross-device (e.g. link opened in mail app)
   const token_hash = searchParams.get("token_hash");
