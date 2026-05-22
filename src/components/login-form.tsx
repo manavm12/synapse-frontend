@@ -27,7 +27,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     } else {
       // Full page navigation ensures auth cookies are persisted before
       // middleware runs — avoids race condition with router.push
-      window.location.href = "/inbox";
+      window.location.href = "/dashboard";
     }
   };
 

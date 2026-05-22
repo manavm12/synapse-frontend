@@ -76,7 +76,7 @@ export function Hero() {
           className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
         >
           <Link
-            href="/dashboard"
+            href="/auth/login"
             className="inline-flex items-center rounded-md px-5 py-2.5 text-sm font-medium text-white/90 transition-all hover:bg-white/10"
             style={{
               background: "rgba(255,255,255,0.07)",
