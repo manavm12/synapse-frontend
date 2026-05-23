@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { TopicTree } from "@/components/kb/topic-tree";
 import { ClaimsView } from "@/components/kb/claims-view";
@@ -9,6 +10,7 @@ import type { Topic, Claim } from "@/lib/types";
 const AGENT_KEY = "synapse-agent-key";
 
 export default function KBPage() {
+  const router = useRouter();
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
@@ -16,7 +18,9 @@ export default function KBPage() {
   const [loadingTopics, setLoadingTopics] = useState(true);
   const [loadingClaims, setLoadingClaims] = useState(false);
 
-  // Load API key from localStorage
+  // Ref tracks the latest requested topic ID so stale responses are discarded
+  const activeTopicId = useRef<string | null>(null);
+
   useEffect(() => {
     const key = localStorage.getItem(AGENT_KEY);
     if (key) setApiKey(key);
@@ -32,25 +36,34 @@ export default function KBPage() {
         const res = await fetch("/api/synapse/v1/kb/tree", {
           headers: { Authorization: `Bearer ${apiKey}` },
         });
+        if (res.status === 401) {
+          // Key is revoked/rotated — clear it and send to dashboard for re-registration
+          localStorage.removeItem(AGENT_KEY);
+          router.push("/dashboard");
+          return;
+        }
         if (res.ok) setTopics(await res.json());
       } finally {
         setLoadingTopics(false);
       }
     })();
-  }, [apiKey]);
+  }, [apiKey, router]);
 
-  // Fetch claims for selected topic
+  // Fetch claims — cancels stale in-flight requests via ref guard
   const fetchClaims = useCallback(async (topic: Topic) => {
     if (!apiKey) return;
+    activeTopicId.current = topic.id;
     setLoadingClaims(true);
     setClaims([]);
     try {
       const res = await fetch(`/api/synapse/v1/kb/topics/${topic.id}/claims`, {
         headers: { Authorization: `Bearer ${apiKey}` },
       });
+      // Discard if a newer topic was selected while this was in flight
+      if (activeTopicId.current !== topic.id) return;
       if (res.ok) setClaims(await res.json());
     } finally {
-      setLoadingClaims(false);
+      if (activeTopicId.current === topic.id) setLoadingClaims(false);
     }
   }, [apiKey]);
 
