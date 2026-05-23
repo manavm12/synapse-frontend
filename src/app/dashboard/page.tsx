@@ -170,6 +170,9 @@ export default function DashboardPage() {
                 <Link href="/inbox" className="rounded-md border border-white/[0.08] px-4 py-2 text-sm text-white/60 transition-colors hover:bg-white/[0.05] hover:text-white/80">
                   Open inbox →
                 </Link>
+                <Link href="/kb" className="rounded-md border border-white/[0.08] px-4 py-2 text-sm text-white/60 transition-colors hover:bg-white/[0.05] hover:text-white/80">
+                  Knowledge base →
+                </Link>
                 <a href="https://github.com/manavm12/synapse" target="_blank" rel="noopener noreferrer"
                   className="rounded-md border border-white/[0.08] px-4 py-2 text-sm text-white/60 transition-colors hover:bg-white/[0.05] hover:text-white/80">
                   Docs & source →

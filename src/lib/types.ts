@@ -50,3 +50,21 @@ export interface MeResponse {
   stats: AgentStats;
   key: KeyMetadata | null;
 }
+
+export interface Topic {
+  id: string;
+  name: string;
+  parent_id: string | null;
+  created_at: string;
+  children?: Topic[];
+}
+
+export interface Claim {
+  id: string;
+  content: string;
+  scope: "private" | "relationship" | "public";
+  source_type: "extracted" | "manual";
+  source_thread_id: string | null;
+  created_at: string;
+  _trust?: string;
+}
