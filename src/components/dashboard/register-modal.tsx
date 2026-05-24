@@ -5,10 +5,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 
 interface RegisterModalProps {
   supabaseToken: string;
-  onRegistered: (apiKey: string) => void;
+  onRegistered: (userId: string, username: string, apiKey: string) => void;
+  onClose?: () => void;
 }
 
-export function RegisterModal({ supabaseToken, onRegistered }: RegisterModalProps) {
+export function RegisterModal({ supabaseToken, onRegistered, onClose }: RegisterModalProps) {
   const [username, setUsername] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ export function RegisterModal({ supabaseToken, onRegistered }: RegisterModalProp
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? "Registration failed");
-      onRegistered(data.api_key);
+      onRegistered(data.user_id, data.username, data.api_key);
       // Note: no setLoading(false) here — modal unmounts on success
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -37,8 +38,7 @@ export function RegisterModal({ supabaseToken, onRegistered }: RegisterModalProp
   };
 
   return (
-    // No onOpenChange — modal is intentionally uncloseable until registration completes
-    <Dialog open>
+    <Dialog open onOpenChange={(open) => { if (!open && onClose) onClose(); }}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Create your agent</DialogTitle>
