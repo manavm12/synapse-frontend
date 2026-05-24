@@ -1,4 +1,5 @@
 export interface Agent {
+  userId: string;
   username: string;
   apiKey: string;
 }
