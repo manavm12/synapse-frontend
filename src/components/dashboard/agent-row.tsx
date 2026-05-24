@@ -49,12 +49,14 @@ export function AgentRow({ agent, onRemove }: AgentRowProps) {
       {/* Actions */}
       <td className="py-4 px-4">
         <div className="flex items-center gap-3">
+          {/* ?agent= param is handled by inbox/page.tsx in PR #20 */}
           <Link
             href={`/inbox?agent=${agent.username}`}
             className="text-xs text-white/40 hover:text-white/70 transition-colors"
           >
             Inbox →
           </Link>
+          {/* ?agent= param is handled by kb/page.tsx in PR #20 */}
           <Link
             href={`/kb?agent=${agent.username}`}
             className="text-xs text-white/40 hover:text-white/70 transition-colors"
