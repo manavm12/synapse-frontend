@@ -10,11 +10,11 @@ function readAgents(): Agent[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    // Support migrating from the old single-key format
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed;
-    // Old format was a plain string (the API key)
-    return [];
+    // Old format was a plain string (single API key) — can't recover username, discard
+    if (!Array.isArray(parsed)) return [];
+    // Normalise any stored records that predate the userId field
+    return parsed.map((a: Agent) => ({ userId: "", ...a }));
   } catch {
     return [];
   }

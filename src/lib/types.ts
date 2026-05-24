@@ -1,5 +1,5 @@
 export interface Agent {
-  userId: string;
+  userId?: string; // Optional for backwards compat with pre-multi-agent stored records
   username: string;
   apiKey: string;
 }
