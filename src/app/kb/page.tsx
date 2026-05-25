@@ -24,9 +24,15 @@ function KBContent() {
   // Ref tracks the latest requested topic ID so stale responses are discarded
   const activeTopicId = useRef<string | null>(null);
 
+  // Reset all per-agent state immediately when the agent changes to prevent
+  // cross-agent data leakage while the new agent's topics are loading
   useEffect(() => {
+    setSelectedTopic(null);
+    setClaims([]);
+    activeTopicId.current = null;
     if (!apiKey) { setLoadingTopics(false); return; }
-  }, [apiKey]);
+    setTopics([]);
+  }, [agentParam, apiKey]);
 
   // Fetch topic tree
   useEffect(() => {
