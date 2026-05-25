@@ -15,7 +15,7 @@ export function AddAgentModal({ onAdd, onClose }: AddAgentModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !apiKey.trim()) return;
-    onAdd({ username: username.trim(), apiKey: apiKey.trim() });
+    onAdd({ userId: "", username: username.trim(), apiKey: apiKey.trim() });
   };
 
   return (

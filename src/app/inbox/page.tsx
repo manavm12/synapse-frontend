@@ -145,7 +145,7 @@ function InboxContent() {
       )}
       {showAddModal && (
         <AddAgentModal
-          onAdd={(agent) => { addAgent({ ...agent, userId: "" }); setShowAddModal(false); }}
+          onAdd={(agent) => { addAgent(agent); setShowAddModal(false); }}
           onClose={() => setShowAddModal(false)}
         />
       )}

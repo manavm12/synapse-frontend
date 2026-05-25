@@ -1,17 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { TopicTree } from "@/components/kb/topic-tree";
 import { ClaimsView } from "@/components/kb/claims-view";
+import { useAgents } from "@/lib/use-agents";
 import type { Topic, Claim } from "@/lib/types";
 
-const AGENT_KEY = "synapse-agent-key";
-
-export default function KBPage() {
+function KBContent() {
   const router = useRouter();
-  const [apiKey, setApiKey] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const agentParam = searchParams.get("agent");
+  const { agents, getAgentKey } = useAgents();
+
+  const apiKey = agentParam ? getAgentKey(agentParam) : null;
   const [topics, setTopics] = useState<Topic[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [claims, setClaims] = useState<Claim[]>([]);
@@ -22,10 +25,8 @@ export default function KBPage() {
   const activeTopicId = useRef<string | null>(null);
 
   useEffect(() => {
-    const key = localStorage.getItem(AGENT_KEY);
-    if (key) setApiKey(key);
-    else setLoadingTopics(false);
-  }, []);
+    if (!apiKey) { setLoadingTopics(false); return; }
+  }, [apiKey]);
 
   // Fetch topic tree
   useEffect(() => {
@@ -37,8 +38,7 @@ export default function KBPage() {
           headers: { Authorization: `Bearer ${apiKey}` },
         });
         if (res.status === 401) {
-          // Key is revoked/rotated — clear it and send to dashboard for re-registration
-          localStorage.removeItem(AGENT_KEY);
+          // Key is revoked/rotated — send to dashboard
           router.push("/dashboard");
           return;
         }
@@ -47,7 +47,7 @@ export default function KBPage() {
         setLoadingTopics(false);
       }
     })();
-  }, [apiKey, router]);
+  }, [apiKey, agentParam, router]);
 
   // Fetch claims — cancels stale in-flight requests via ref guard
   const fetchClaims = useCallback(async (topic: Topic) => {
@@ -82,16 +82,33 @@ export default function KBPage() {
           </span>
         </div>
 
+        {/* Agent switcher */}
+        <div className="border-b border-white/[0.06] py-2">
+          <p className="px-4 pb-1 pt-1 text-[10px] tracking-widest uppercase text-white/20">Agent</p>
+          {agents.map((agent) => (
+            <a
+              key={agent.username}
+              href={`/kb?agent=${agent.username}`}
+              className={`flex w-full items-center gap-2 px-4 py-1.5 text-xs transition-colors hover:bg-white/[0.04] ${
+                agentParam === agent.username ? "text-white" : "text-white/40"
+              }`}
+            >
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-[9px] font-semibold uppercase text-white/60">
+                {agent.username[0]}
+              </span>
+              <span className="truncate">{agent.username}</span>
+            </a>
+          ))}
+        </div>
+
+        {/* Topics */}
         <div className="flex-1 overflow-y-auto p-2">
           {loadingTopics && (
             <p className="px-2 py-2 text-xs text-white/25">Loading...</p>
           )}
           {!loadingTopics && !apiKey && (
             <p className="px-2 py-2 text-xs text-white/25">
-              No API key —{" "}
-              <Link href="/dashboard" className="underline hover:text-white/50">
-                go to dashboard
-              </Link>
+              Select an agent above
             </p>
           )}
           {!loadingTopics && apiKey && topics.length === 0 && (
@@ -104,10 +121,7 @@ export default function KBPage() {
           />
         </div>
 
-        <div className="border-t border-white/[0.06] p-3 flex flex-col gap-1">
-          <Link href="/inbox" className="text-xs text-white/25 hover:text-white/50 transition-colors">
-            ← Inbox
-          </Link>
+        <div className="border-t border-white/[0.06] p-3">
           <Link href="/dashboard" className="text-xs text-white/25 hover:text-white/50 transition-colors">
             ← Dashboard
           </Link>
@@ -121,5 +135,13 @@ export default function KBPage() {
         loading={loadingClaims}
       />
     </div>
+  );
+}
+
+export default function KBPage() {
+  return (
+    <Suspense fallback={<div className="flex h-full items-center justify-center"><p className="text-xs text-white/25">Loading...</p></div>}>
+      <KBContent />
+    </Suspense>
   );
 }
