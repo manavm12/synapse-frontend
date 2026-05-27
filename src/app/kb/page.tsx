@@ -127,11 +127,6 @@ function KBContent() {
           />
         </div>
 
-        <div className="border-t border-white/[0.06] p-3">
-          <Link href="/dashboard" className="text-xs text-white/25 hover:text-white/50 transition-colors">
-            ← Dashboard
-          </Link>
-        </div>
       </aside>
 
       {/* Main — claims view */}
