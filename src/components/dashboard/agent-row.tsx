@@ -3,15 +3,18 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { Agent } from "@/lib/types";
+import { RotateKeyModal } from "@/components/dashboard/rotate-key-modal";
 
 interface AgentRowProps {
   agent: Agent;
   onRemove: (username: string) => void;
+  onKeyRotated: (username: string, newKey: string) => void;
 }
 
-export function AgentRow({ agent, onRemove }: AgentRowProps) {
+export function AgentRow({ agent, onRemove, onKeyRotated }: AgentRowProps) {
   const [copied, setCopied] = useState(false);
   const [keyVisible, setKeyVisible] = useState(false);
+  const [showRotateModal, setShowRotateModal] = useState(false);
 
   const copy = async () => {
     await navigator.clipboard.writeText(agent.apiKey);
@@ -64,6 +67,12 @@ export function AgentRow({ agent, onRemove }: AgentRowProps) {
             KB →
           </Link>
           <button
+            onClick={() => setShowRotateModal(true)}
+            className="text-xs text-white/20 hover:text-white/50 transition-colors"
+          >
+            Rotate key
+          </button>
+          <button
             onClick={() => onRemove(agent.username)}
             className="text-xs text-white/20 hover:text-red-400/60 transition-colors"
           >
@@ -71,6 +80,20 @@ export function AgentRow({ agent, onRemove }: AgentRowProps) {
           </button>
         </div>
       </td>
+
+      {showRotateModal && (
+        <td className="p-0">
+          <RotateKeyModal
+            username={agent.username}
+            apiKey={agent.apiKey}
+            onRotated={(newKey) => {
+              onKeyRotated(agent.username, newKey);
+              setShowRotateModal(false);
+            }}
+            onClose={() => setShowRotateModal(false)}
+          />
+        </td>
+      )}
     </tr>
   );
 }
