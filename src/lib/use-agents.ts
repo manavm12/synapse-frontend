@@ -55,5 +55,15 @@ export function useAgents() {
     [agents]
   );
 
-  return { agents, addAgent, removeAgent, getAgentKey };
+  const updateAgentKey = useCallback((username: string, newApiKey: string) => {
+    setAgentsState((prev) => {
+      const updated = prev.map((a) =>
+        a.username === username ? { ...a, apiKey: newApiKey } : a
+      );
+      writeAgents(updated);
+      return updated;
+    });
+  }, []);
+
+  return { agents, addAgent, removeAgent, getAgentKey, updateAgentKey };
 }
