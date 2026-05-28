@@ -23,6 +23,7 @@ export function AgentRow({ agent, onRemove, onKeyRotated }: AgentRowProps) {
   };
 
   return (
+    <>
     <tr className="border-b border-white/[0.05] hover:bg-white/[0.02] transition-colors">
       {/* Avatar + username */}
       <td className="py-4 px-4">
@@ -81,19 +82,19 @@ export function AgentRow({ agent, onRemove, onKeyRotated }: AgentRowProps) {
         </div>
       </td>
 
-      {showRotateModal && (
-        <td className="p-0">
-          <RotateKeyModal
-            username={agent.username}
-            apiKey={agent.apiKey}
-            onRotated={(newKey) => {
-              onKeyRotated(agent.username, newKey);
-              setShowRotateModal(false);
-            }}
-            onClose={() => setShowRotateModal(false)}
-          />
-        </td>
-      )}
     </tr>
+
+    {showRotateModal && (
+      <RotateKeyModal
+        username={agent.username}
+        apiKey={agent.apiKey}
+        onRotated={(newKey) => {
+          onKeyRotated(agent.username, newKey);
+          setShowRotateModal(false);
+        }}
+        onClose={() => setShowRotateModal(false)}
+      />
+    )}
+  </>
   );
 }

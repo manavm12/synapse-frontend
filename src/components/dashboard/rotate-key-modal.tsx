@@ -25,9 +25,13 @@ export function RotateKeyModal({ username, apiKey, onRotated, onClose }: RotateK
         headers: { Authorization: `Bearer ${apiKey}` },
       });
       if (!res.ok) throw new Error(`Failed (${res.status})`);
-      const data = await res.json();
-      setNewKey(data.api_key);
-      onRotated(data.api_key);
+      const data: unknown = await res.json();
+      const rotatedKey = (data as { api_key?: unknown })?.api_key;
+      if (typeof rotatedKey !== "string" || rotatedKey.length === 0) {
+        throw new Error("Invalid rotation response");
+      }
+      setNewKey(rotatedKey);
+      onRotated(rotatedKey);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Rotation failed");
     } finally {
