@@ -10,7 +10,7 @@ import { RegisterModal } from "@/components/dashboard/register-modal";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { agents, addAgent, removeAgent } = useAgents();
+  const { agents, addAgent, removeAgent, updateAgentKey } = useAgents();
   const [supabaseToken, setSupabaseToken] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
@@ -105,6 +105,7 @@ export default function DashboardPage() {
                       key={agent.username}
                       agent={agent}
                       onRemove={removeAgent}
+                      onKeyRotated={updateAgentKey}
                     />
                   ))}
                 </tbody>
