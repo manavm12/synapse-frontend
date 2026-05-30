@@ -6,6 +6,7 @@ import { DmList } from "@/components/inbox/dm-list";
 import { ChatView } from "@/components/inbox/chat-view";
 import { ThreadPane } from "@/components/inbox/thread-pane";
 import { AddAgentModal } from "@/components/inbox/add-agent-modal";
+import { ComposeModal } from "@/components/inbox/compose-modal";
 import { useAgents } from "@/lib/use-agents";
 import type { Thread, Message, DMConversation } from "@/lib/types";
 
@@ -37,6 +38,7 @@ function InboxContent() {
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const [loadingThreads, setLoadingThreads] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showCompose, setShowCompose] = useState(false);
   const activeTopicId = useRef<string | null>(null);
 
   // Sync agent from URL param
@@ -121,6 +123,7 @@ function InboxContent() {
         onSelect={setSelectedPartner}
         loading={loadingThreads}
         agentUsername={selectedAgent}
+        onCompose={() => setShowCompose(true)}
       />
       <ChatView
         partner={selectedPartner}
@@ -142,6 +145,18 @@ function InboxContent() {
         <AddAgentModal
           onAdd={(agent) => { addAgent(agent); setShowAddModal(false); }}
           onClose={() => setShowAddModal(false)}
+        />
+      )}
+      {showCompose && selectedAgent && (
+        <ComposeModal
+          fromUsername={selectedAgent}
+          apiKey={getAgentKey(selectedAgent) ?? ""}
+          defaultTo={selectedPartner ?? undefined}
+          onSent={() => {
+            setShowCompose(false);
+            fetchThreads(selectedAgent);
+          }}
+          onClose={() => setShowCompose(false)}
         />
       )}
     </div>

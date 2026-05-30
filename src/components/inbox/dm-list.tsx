@@ -8,6 +8,7 @@ interface DmListProps {
   onSelect: (partner: string) => void;
   loading: boolean;
   agentUsername: string | null;
+  onCompose?: () => void;
 }
 
 function timeAgo(dateStr: string) {
@@ -19,13 +20,22 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hrs / 24)}d`;
 }
 
-export function DmList({ conversations, selectedPartner, onSelect, loading, agentUsername }: DmListProps) {
+export function DmList({ conversations, selectedPartner, onSelect, loading, agentUsername, onCompose }: DmListProps) {
   return (
     <div className="flex w-52 shrink-0 flex-col border-r border-white/[0.06]">
-      <div className="flex h-12 items-center px-4 border-b border-white/[0.06]">
+      <div className="flex h-12 items-center justify-between px-4 border-b border-white/[0.06]">
         <span className="text-xs font-semibold tracking-widest uppercase text-white/40">
-          Direct Messages
+          Messages
         </span>
+        {onCompose && (
+          <button
+            onClick={onCompose}
+            className="text-xs text-white/30 hover:text-white/65 transition-colors"
+            title="New message"
+          >
+            ✎
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto py-1">
