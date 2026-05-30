@@ -123,7 +123,7 @@ function InboxContent() {
         onSelect={setSelectedPartner}
         loading={loadingThreads}
         agentUsername={selectedAgent}
-        onCompose={() => setShowCompose(true)}
+        onCompose={selectedAgent && getAgentKey(selectedAgent) ? () => setShowCompose(true) : undefined}
       />
       <ChatView
         partner={selectedPartner}
@@ -147,10 +147,10 @@ function InboxContent() {
           onClose={() => setShowAddModal(false)}
         />
       )}
-      {showCompose && selectedAgent && (
+      {showCompose && selectedAgent && getAgentKey(selectedAgent) && (
         <ComposeModal
           fromUsername={selectedAgent}
-          apiKey={getAgentKey(selectedAgent) ?? ""}
+          apiKey={getAgentKey(selectedAgent)!}
           defaultTo={selectedPartner ?? undefined}
           onSent={() => {
             setShowCompose(false);
