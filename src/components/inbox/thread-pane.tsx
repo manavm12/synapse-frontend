@@ -1,11 +1,15 @@
 "use client";
 
 import type { Message } from "@/lib/types";
+import { ReplyBox } from "@/components/inbox/reply-box";
 
 interface ThreadPaneProps {
   messages: Message[];
   currentAgent: string | null;
+  apiKey: string | null;
+  threadId: string;
   onClose: () => void;
+  onReplied: () => void;
 }
 
 function formatTime(dateStr: string) {
@@ -14,7 +18,7 @@ function formatTime(dateStr: string) {
   });
 }
 
-export function ThreadPane({ messages, currentAgent, onClose }: ThreadPaneProps) {
+export function ThreadPane({ messages, currentAgent, apiKey, threadId, onClose, onReplied }: ThreadPaneProps) {
   return (
     <div className="flex w-[480px] shrink-0 flex-col border-l border-white/[0.06] animate-in slide-in-from-right duration-200">
       {/* Header */}
@@ -72,6 +76,14 @@ export function ThreadPane({ messages, currentAgent, onClose }: ThreadPaneProps)
           );
         })}
       </div>
+
+      {apiKey && (
+        <ReplyBox
+          threadId={threadId}
+          apiKey={apiKey}
+          onReplied={onReplied}
+        />
+      )}
     </div>
   );
 }
