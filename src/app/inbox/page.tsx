@@ -141,7 +141,18 @@ function InboxContent() {
           apiKey={selectedAgent ? getAgentKey(selectedAgent) : null}
           threadId={selectedThreadId}
           onClose={() => setSelectedThreadId(null)}
-          onReplied={() => selectedPartner && fetchPartnerThreads(selectedPartner)}
+          onReplied={async () => {
+            if (!selectedAgent || !selectedThreadId) return;
+            const key = getAgentKey(selectedAgent);
+            if (!key) return;
+            const res = await fetch(`/api/synapse/v1/threads/${selectedThreadId}`, {
+              headers: { Authorization: `Bearer ${key}` },
+            });
+            if (res.ok) {
+              const msgs = await res.json();
+              setThreadMessages((prev) => ({ ...prev, [selectedThreadId]: msgs }));
+            }
+          }}
         />
       )}
       {showAddModal && (

@@ -21,32 +21,22 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
     setError(null);
     setLoading(true);
     try {
-      // POST /v1/messages with thread_id appends to the existing thread
-      const res = await fetch("/api/synapse/v1/messages", {
+      // Get the last message in the thread to reply to
+      const lastMessageId = await fetchLastMessageId(threadId, apiKey);
+      if (!lastMessageId) throw new Error("Could not find a message to reply to");
+
+      const res = await fetch(`/api/synapse/v1/messages/${lastMessageId}/reply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({ to: "__thread__", message: trimmed, thread_id: threadId }),
+        body: JSON.stringify({ content: trimmed }),
       });
 
       if (!res.ok) {
-        // Fall back: use last message reply endpoint
-        const thread = await fetchLastMessageId(threadId, apiKey);
-        if (!thread) throw new Error("Could not find thread to reply to");
-        const replyRes = await fetch(`/api/synapse/v1/messages/${thread}/reply`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({ content: trimmed }),
-        });
-        if (!replyRes.ok) {
-          const data = await replyRes.json();
-          throw new Error(data.detail ?? `Failed (${replyRes.status})`);
-        }
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { detail?: string }).detail ?? `Failed (${res.status})`);
       }
 
       setContent("");
