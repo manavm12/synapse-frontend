@@ -138,7 +138,10 @@ function InboxContent() {
         <ThreadPane
           messages={threadMessages[selectedThreadId]}
           currentAgent={selectedAgent}
+          apiKey={selectedAgent ? getAgentKey(selectedAgent) : null}
+          threadId={selectedThreadId}
           onClose={() => setSelectedThreadId(null)}
+          onReplied={() => selectedPartner && fetchPartnerThreads(selectedPartner)}
         />
       )}
       {showAddModal && (
