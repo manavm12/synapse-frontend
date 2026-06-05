@@ -12,6 +12,7 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-focus when the pane opens
@@ -45,6 +46,11 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
       }
 
       setContent("");
+      setSent(true);
+      setTimeout(() => {
+        setSent(false);
+        textareaRef.current?.focus();
+      }, 1500);
       onReplied();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to send");
@@ -78,6 +84,8 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
         <div className="flex items-center justify-between px-3 pb-2">
           {error ? (
             <p className="text-xs text-red-400/80">{error}</p>
+          ) : sent ? (
+            <p className="text-xs text-white/40">✓ Sent</p>
           ) : (
             <span className="text-[10px] text-white/20">⌘↵ to send</span>
           )}
