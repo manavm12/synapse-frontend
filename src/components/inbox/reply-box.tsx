@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface ReplyBoxProps {
   threadId: string;
@@ -13,6 +13,11 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-focus when the pane opens
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, [threadId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
