@@ -75,7 +75,7 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
         <textarea
           ref={textareaRef}
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => { setContent(e.target.value); if (error) setError(null); }}
           onKeyDown={handleKeyDown}
           placeholder="Reply… (⌘↵ to send)"
           rows={3}
