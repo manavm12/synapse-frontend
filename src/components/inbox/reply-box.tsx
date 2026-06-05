@@ -14,11 +14,21 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const sentTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Auto-focus when the pane opens
+  // Auto-focus when the pane opens; also reset sent state on thread switch
   useEffect(() => {
+    setSent(false);
+    if (sentTimeoutRef.current) clearTimeout(sentTimeoutRef.current);
     textareaRef.current?.focus();
   }, [threadId]);
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (sentTimeoutRef.current) clearTimeout(sentTimeoutRef.current);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +56,9 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
       }
 
       setContent("");
+      if (sentTimeoutRef.current) clearTimeout(sentTimeoutRef.current);
       setSent(true);
-      setTimeout(() => {
+      sentTimeoutRef.current = setTimeout(() => {
         setSent(false);
         textareaRef.current?.focus();
       }, 1500);
