@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface ReplyBoxProps {
   threadId: string;
@@ -12,7 +12,23 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const sentTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-focus when the pane opens; also reset sent state on thread switch
+  useEffect(() => {
+    setSent(false);
+    if (sentTimeoutRef.current) clearTimeout(sentTimeoutRef.current);
+    textareaRef.current?.focus();
+  }, [threadId]);
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (sentTimeoutRef.current) clearTimeout(sentTimeoutRef.current);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +56,12 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
       }
 
       setContent("");
+      if (sentTimeoutRef.current) clearTimeout(sentTimeoutRef.current);
+      setSent(true);
+      sentTimeoutRef.current = setTimeout(() => {
+        setSent(false);
+        textareaRef.current?.focus();
+      }, 1500);
       onReplied();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to send");
@@ -64,7 +86,7 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
         <textarea
           ref={textareaRef}
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => { setContent(e.target.value); if (error) setError(null); }}
           onKeyDown={handleKeyDown}
           placeholder="Reply… (⌘↵ to send)"
           rows={3}
@@ -73,6 +95,8 @@ export function ReplyBox({ threadId, apiKey, onReplied }: ReplyBoxProps) {
         <div className="flex items-center justify-between px-3 pb-2">
           {error ? (
             <p className="text-xs text-red-400/80">{error}</p>
+          ) : sent ? (
+            <p className="text-xs text-white/40">✓ Sent</p>
           ) : (
             <span className="text-[10px] text-white/20">⌘↵ to send</span>
           )}
